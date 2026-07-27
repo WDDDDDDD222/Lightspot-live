@@ -19,6 +19,7 @@
         <module>Lightspot-live-user-interface</module>
         <module>Lightspot-live-user-provider</module>
         <module>Lightspot-live-api</module>
+        <module>Lightspot-live-common-interface</module>
     </modules>
 
 
@@ -26,7 +27,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <qiyu-mysql.version>8.0.28</qiyu-mysql.version>
+        <Lightspot-mysql.version>8.0.28</Lightspot-mysql.version>
         <springboot.version>3.0.4</springboot.version>
     </properties>
 
@@ -41,5 +42,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 
 </project>
