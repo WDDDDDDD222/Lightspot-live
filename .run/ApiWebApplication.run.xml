@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApiWebApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="Lightspot-live-api" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.Lightspot.live.api.ApiWebApplication" />
+    <option name="VM_PARAMETERS" value="-javaagent:C:\Users\wd\Desktop\Lightspot-live\tools\skywalking\agent\skywalking-agent.jar -Dskywalking.agent.service_name=Lightspot-live-api -Dskywalking.collector.backend_service=127.0.0.1:11800 -Dskywalking.logging.level=WARN -Dskywalking.logging.output=FILE" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.Lightspot.live.api.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
