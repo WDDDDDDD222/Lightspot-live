@@ -11,6 +11,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class ApiWebApplication {
     public static void main(String[] args) {
+        System.setProperty("dubbo.application.qos-enable", "false");
+        System.setProperty("dubbo.application.qos.enable", "false");
+        System.setProperty("qos.enable", "false");
         SpringApplication springApplication = new SpringApplication(ApiWebApplication.class);
         springApplication.setWebApplicationType(WebApplicationType.SERVLET);
         springApplication.run(args);

@@ -11,9 +11,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class UserProviderApplication {
     public static void main(String[] args) {
-    SpringApplication springApplication = new SpringApplication(UserProviderApplication.class);
-    springApplication.setWebApplicationType(WebApplicationType.NONE);
-    springApplication.run(args);
-
+        System.setProperty("dubbo.application.qos-enable", "false");
+        System.setProperty("dubbo.application.qos.enable", "false");
+        System.setProperty("qos.enable", "false");
+        SpringApplication springApplication = new SpringApplication(UserProviderApplication.class);
+        springApplication.setWebApplicationType(WebApplicationType.NONE);
+        springApplication.run(args);
     }
 }

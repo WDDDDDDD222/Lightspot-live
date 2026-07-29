@@ -1,0 +1,57 @@
+services:
+  lightspot-mysql-master:
+    image: mysql:8.0
+    container_name: lightspot-mysql-master
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --lower_case_table_names=1
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --character-set-server=utf8mb3
+      - --collation-server=utf8mb3_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - lightspot_mysql_master_data:/var/lib/mysql
+    networks:
+      - lightspot-mysql
+
+  lightspot-mysql-slave0:
+    image: mysql:8.0
+    container_name: lightspot-mysql-slave0
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --lower_case_table_names=1
+      - --server-id=2
+      - --relay-log=mysql-relay
+      - --read-only=ON
+      - --super-read-only=ON
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --character-set-server=utf8mb3
+      - --collation-server=utf8mb3_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    ports:
+      - "3308:3306"
+    volumes:
+      - lightspot_mysql_slave0_data:/var/lib/mysql
+    depends_on:
+      - lightspot-mysql-master
+    networks:
+      - lightspot-mysql
+
+networks:
+  lightspot-mysql:
+    name: lightspot-mysql
+
+volumes:
+  lightspot_mysql_master_data:
+  lightspot_mysql_slave0_data:

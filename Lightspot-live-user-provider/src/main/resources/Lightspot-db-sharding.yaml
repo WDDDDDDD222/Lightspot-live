@@ -1,25 +1,49 @@
 dataSources:
-  user:  ##新表，重建的分表
+  Lightspot_user_master:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/Lightspot_live_user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3307/Lightspot_live_user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: 123456
-    idle-timeout: 5 #单位：分钟
-    minimum-idle: 100
-    pool-name: Lightspot-db-user
-    maximum-pool-size: 1000
+    idle-timeout: 300000
+    minimum-idle: 5
+    pool-name: Lightspot-db-user-master
+    maximum-pool-size: 30
+    connection-timeout: 30000
+    connection-init-sql: SELECT 1
+    connection-test-query: SELECT 1
+  Lightspot_user_slave0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3308/Lightspot_live_user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+    idle-timeout: 300000
+    minimum-idle: 5
+    pool-name: Lightspot-db-user-slave0
+    maximum-pool-size: 30
     connection-timeout: 30000
     connection-init-sql: SELECT 1
     connection-test-query: SELECT 1
 
 rules:
+  - !READWRITE_SPLITTING
+    dataSources:
+      Lightspot_user_ds:
+        staticStrategy:
+          writeDataSourceName: Lightspot_user_master
+          readDataSourceNames:
+            - Lightspot_user_slave0
+        loadBalancerName: Lightspot_round_robin
+    loadBalancers:
+      Lightspot_round_robin:
+        type: ROUND_ROBIN
   - !SINGLE
-    defaultDataSource: user ## 不分表分分库的默认数据源
+    defaultDataSource: Lightspot_user_ds
   - !SHARDING
     tables:
       t_user:
-        actualDataNodes: user.t_user_${(0..99).collect(){it.toString().padLeft(2,'0')}}
+        actualDataNodes: Lightspot_user_ds.t_user_${(0..99).collect(){it.toString().padLeft(2,'0')}}
         tableStrategy:
           standard:
             shardingColumn: user_id
