@@ -1,7 +1,28 @@
-server:
-  port: 8081
-
 spring:
+  application:
+    name: Lightspot-live-user-provider
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     url: jdbc:shardingsphere:classpath:Lightspot-db-sharding.yaml
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      lettuce:
+        pool:
+          min-idle: 10
+          max-active: 50
+          max-idle: 20
+
+dubbo:
+  application:
+    name: ${spring.application.name}
+    qos-enable: false
+    register-mode: instance
+  registry:
+    address: nacos://127.0.0.1:8848
+  protocol:
+    name: dubbo
+    port: -1
+  scan:
+    base-packages: org.Lightspot.live.user.provider.rpc

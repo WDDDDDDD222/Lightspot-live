@@ -20,6 +20,7 @@
         <module>Lightspot-live-user-provider</module>
         <module>Lightspot-live-api</module>
         <module>Lightspot-live-common-interface</module>
+        <module>Lightspot-live-framework</module>
     </modules>
 
 

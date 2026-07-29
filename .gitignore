@@ -37,3 +37,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### SkyWalking local agent ###
+tools/skywalking/agent/

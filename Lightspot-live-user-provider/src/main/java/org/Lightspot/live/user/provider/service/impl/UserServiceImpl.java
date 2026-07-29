@@ -6,14 +6,16 @@ import org.Lightspot.live.user.dto.UserDTO;
 import org.Lightspot.live.user.provider.dao.mapper.IUserMapper;
 import org.Lightspot.live.user.provider.dao.po.UserPO;
 import org.Lightspot.live.user.provider.service.IUserService;
-import org.apache.calcite.runtime.Resources;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements IUserService {
     @Resource
     private IUserMapper userMapper;
+    @Resource
+    private RedisTemplate<String, UserDTO> redisTemplate;
 
     /**
      * 根据用户id查询用户信息
@@ -25,7 +27,31 @@ public class UserServiceImpl implements IUserService {
         if (userMapper == null){
             return null;
         }
-        return ConvertBeanUtils.convert(userMapper.selectById(userId),UserDTO.class);
+        String key = "userInfo:" + userId;
+        UserDTO userDTO = getUserInfoFromCache(key);
+        if (userDTO != null){
+            return userDTO;
+        }
+        userDTO =ConvertBeanUtils.convert(userMapper.selectById(userId),UserDTO.class);
+        if(userDTO != null){
+            saveUserInfoToCache(key, userDTO);
+        }
+        return userDTO;
+    }
+
+    private UserDTO getUserInfoFromCache(String key) {
+        try {
+            return redisTemplate.opsForValue().get(key);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private void saveUserInfoToCache(String key, UserDTO userDTO) {
+        try {
+            redisTemplate.opsForValue().set(key,userDTO);
+        } catch (RuntimeException ignored) {
+        }
     }
 
     /**
@@ -38,8 +64,29 @@ public class UserServiceImpl implements IUserService {
        if(userDTO == null || userDTO.getUserId() == null ){
            return false;
        }
+       if (hasNoUpdateField(userDTO)) {
+           return false;
+       }
        userMapper.updateById(ConvertBeanUtils.convert(userDTO,UserPO.class));
+       deleteUserInfoCache(userDTO.getUserId());
         return  true;
+    }
+
+    private boolean hasNoUpdateField(UserDTO userDTO) {
+        return userDTO.getNickName() == null
+                && userDTO.getTrueName() == null
+                && userDTO.getAvatar() == null
+                && userDTO.getSex() == null
+                && userDTO.getWorkCity() == null
+                && userDTO.getBornCity() == null
+                && userDTO.getBornDate() == null;
+    }
+
+    private void deleteUserInfoCache(Long userId) {
+        try {
+            redisTemplate.delete("userInfo:" + userId);
+        } catch (RuntimeException ignored) {
+        }
     }
 
     /**
